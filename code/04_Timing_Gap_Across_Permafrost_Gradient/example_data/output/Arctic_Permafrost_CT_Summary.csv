@@ -1,0 +1,6 @@
+filename,basin,permafrost,DOC,discharge,QlagDOC
+Arctic_continuous,Arctic,continuous,129.1129,150.0002,21.2686
+Arctic_discontinuous,Arctic,discontinuous,128.5298,146.294,17.8612
+Arctic_sporadic,Arctic,sporadic,127.4253,142.1487,12.7794
+Arctic_isolated,Arctic,isolated,127.1043,139.6185,11.6512
+Arctic_no_permafrost,Arctic,no_permafrost,125.5826,133.7405,7.4928
