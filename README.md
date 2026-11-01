@@ -1,87 +1,108 @@
 # Arctic River DOC–Discharge Timing
 
-Code repository for *“Asynchronous carbon and water pulses in Arctic rivers driven by permafrost continuity”*
+Code for analysing asynchronous spring carbon and water pulses across Arctic rivers.
 
 ## Overview
 
-This repository contains the code and compact example datasets used to reconstruct daily dissolved organic carbon (DOC) concentrations and quantify DOC–discharge timing offsets across six major Arctic rivers: the Ob, Yenisey, Lena, Kolyma, Yukon and Mackenzie. River-specific satellite DOC retrievals are paired with observed discharge at the six outlets and reach-matched GloFAS discharge across channel networks to calculate the centres of timing of DOC concentration and discharge and their seasonal offset (ΔCT).
+This repository contains research scripts and compact example datasets for reconstructing daily dissolved organic carbon (DOC) concentrations and analysing DOC–discharge timing offsets across six major Arctic rivers: the Ob, Yenisey, Lena, Kolyma, Yukon and Mackenzie.
 
-Daily DOC concentrations are reconstructed from 26 years of 500-m MODIS MCD43A4 Collection 6.1 Nadir Bidirectional Reflectance Distribution Function Adjusted Reflectance (NBAR) data (2000–2025). Timing analyses cover the fixed snowmelt-season interval from 1 March to 30 June and span river outlets, satellite-resolvable channel networks and five permafrost-continuity classes.
+Daily DOC concentrations are reconstructed using MODIS MCD43A4 Collection 6.1 Nadir Bidirectional Reflectance Distribution Function Adjusted Reflectance (NBAR) data. Reconstructed DOC is paired with observed outlet discharge and river-channel discharge to analyse spring pulse onset (SPO) during March–June over 2000–2025.
+
+The analyses cover river outlets, satellite-resolvable river networks and five permafrost classes. Additional scripts analyse March–June DOC flux trends and correlations among annual onset dates.
 
 ## Repository Layout
 
-```text
-code/
-├── 01_Daily_DOC_Retrieval/
-├── 02_DOC_Discharge_Timing_Offset_at_Outlets/
-├── 03_DOC_Discharge_Timing_Offset_Across_River_Networks/
-├── 04_Timing_Gap_Across_Permafrost_Gradient/
-└── 05_Centres_of_Timing_Across_Permafrost_Gradient/
-```
+| Directory | Main functions |
+|---|---|
+| `code/01_Daily_DOC_Retrieval/` | Satellite DOC retrieval and model validation |
+| `code/02_DOC_Discharge_Timing_Offset_at_Outlets/` | Seasonal cycles, annual SPO and outlet timing offsets |
+| `code/03_DOC_Discharge_Timing_Offset_Across_River_Networks/` | Annual SPO and spatial timing offsets across river networks |
+| `code/04_Timing_Gap_Across_Permafrost_Gradient/` | Timing-offset comparisons among permafrost classes |
+| `code/05_DOC_flux_trend/` | Seasonal DOC flux trends and annual SPO correlations |
 
-The repository is organised into five sequential workflows. Each directory contains numbered scripts and, where available, an `example_data` directory with selected inputs, outputs and reference figures.
+Each directory contains numbered scripts and an `example_data` directory with selected inputs and outputs.
 
 ## Workflow 1 — Daily DOC Retrieval
 
-Google Earth Engine (GEE) is used to train river-specific random-forest models relating the seven MODIS NBAR reflectance bands to same-day in situ DOC observations. Models are evaluated with an 80% training and 20% hold-out split before being applied to valid daily imagery over eligible wide river channels.
+Google Earth Engine (GEE) scripts train random-forest models relating seven MODIS NBAR reflectance bands to same-day field DOC observations. Model performance is evaluated using an 80% training and 20% validation split. The retrieval model is then applied to daily imagery over eligible river channels.
 
-The Lena River example demonstrates the required spatial and tabular inputs. Replace the example GEE asset identifiers and export paths with assets accessible from your Earth Engine account.
+The Lena River example illustrates the required observation and spatial inputs. Replace the example asset identifiers and configure the application period before running the scripts.
 
 ## Workflow 2 — Timing Offsets at River Outlets
 
-Satellite-retrieved daily DOC concentrations are paired with ArcticGRO discharge observations to calculate multi-year seasonal cycles, annual March–June centres of timing and ΔCT at the six river outlets.
+Daily DOC concentrations and observed discharge are used to calculate multi-year daily seasonal cycles and annual March–June SPO at the six river outlets.
+
+The plotting script displays seasonal curves, standard-deviation ribbons, mean annual SPO dates and paired annual timing offsets with 95% confidence intervals.
 
 ## Workflow 3 — Timing Offsets Across River Networks
 
-The outlet analysis is extended to satellite-resolvable main stems and tributaries by pairing daily reconstructed DOC with geographically and hydrologically matched GloFAS discharge. CTDOC, CTQ and ΔCT are calculated for individual channel units and mapped across the six river networks.
+Daily DOC and discharge rasters are processed separately to calculate annual SPO for each channel cell. Annual results are averaged over valid years to generate multi-year mean SPO maps.
+
+The spatial timing offset is calculated as mean discharge SPO minus mean DOC SPO. Results are exported as rasters and point layers and mapped with permafrost, river-basin, reservoir and dam layers.
 
 ## Workflow 4 — Timing Gap Across the Permafrost Gradient
 
-Channel-scale ΔCT estimates are assigned to continuous, discontinuous, sporadic, isolated and permafrost-free classes to quantify variation along the permafrost-continuity gradient.
+Channel-scale timing offsets are extracted for continuous, discontinuous, sporadic, isolated and permafrost-free regions.
 
-## Workflow 5 — Centres of Timing Across the Permafrost Gradient
+Boxplots summarise the offset distributions. Class means and their linear relationship with ordered permafrost classes are also displayed.
 
-Annual centres of timing are compared for shallow soil water in the upper 0–28 cm (CTSoilW), DOC concentration (CTDOC), snowmelt (CTSnowmelt) and discharge (CTQ). Analyses across permafrost classes and river basins test the separation between an early biogeochemical clock and a later hydrological clock.
+## Workflow 5 — DOC Flux Trends and SPO Correlations
 
-## Timing Metrics
+Annual March–June cumulative DOC flux rasters are used to calculate multi-year mean flux, linear trends and trend significance. Spatial maps show the trend distribution and highlight significant changes.
 
-All timing metrics are evaluated over the fixed 122-day interval from 1 March (*t* = 1) to 30 June (*t* = 122). For a non-negative daily variable *X*ₜ, the centre of timing is:
+Separate correlation scripts compare annual SPO dates for DOC concentration, DOC flux (FDOC), discharge (Q), snowmelt and shallow soil water in the upper 0–28 cm (SoilW). Analyses are performed for the six river basins and five permafrost zones.
 
-$$
-\mathrm{CT}_X=\frac{\sum tX_t}{\sum X_t}, \qquad t=1,\ldots,122
-$$
+## Timing Metric
 
-The DOC–discharge timing offset is defined as ΔCT = CTQ − CTDOC. Positive ΔCT indicates that DOC concentration occurs earlier in the season than discharge; values near zero indicate approximate synchrony, whereas negative ΔCT indicates an earlier discharge centre of timing.
+SPO is calculated within the March–June period. After applying a five-day centred moving average, daily anomalies are calculated relative to the mean of the smoothed seasonal sequence. SPO is defined as the date of the first minimum in the cumulative anomaly.
 
-Outlet ΔCT uses reconstructed DOC and observed discharge, whereas network-scale ΔCT uses reconstructed DOC and reach-matched GloFAS discharge. GloFAS is used to resolve discharge timing, not absolute outlet DOC fluxes.
+Annual SPO dates are expressed as day of year (DOY).
+
+The DOC–discharge timing offset is defined as:
+
+**ΔSPO = SPO_Q - SPO_DOC**
+
+Positive values indicate that DOC onset precedes discharge onset. Negative values indicate that discharge onset precedes DOC onset.
+
+At river outlets, annual DOC and discharge SPO values are paired by year. Network maps use the difference between the two multi-year mean SPO rasters.
 
 ## Software Environment
 
-Satellite retrieval, soil-water and snowmelt extraction are implemented in the Google Earth Engine Code Editor. All other preprocessing, timing, statistical and figure-generation scripts are written in R and were run with R version 4.5.0.
+Satellite retrieval scripts run in the Google Earth Engine Code Editor and require an Earth Engine account.
 
-Principal R packages include `tidyverse`, `data.table`, `lubridate`, `sf`, `terra`, `raster`, `ggplot2` and `patchwork`. Exact package versions can be recorded with `sessionInfo()`; GEE scripts require an Earth Engine account but no local JavaScript installation.
+Other analyses are implemented in R. Required packages include:
+
+- `data.table`
+- `dplyr`
+- `readr`
+- `terra`
+- `sf`
+- `ggplot2`
+- `lubridate`
+- `patchwork`
 
 ## Running the Workflows
 
-1. Clone or download the repository and use its root as the working directory.
-2. Replace the example asset identifiers and export paths, then run the GEE scripts in numerical order.
-3. Run the numbered R scripts within each workflow directory in ascending order.
-4. Where available, compare generated products with `example_data/output` and `example_data/figures`.
+1. Clone or download the repository.
+2. For GEE scripts, upload the required example assets and replace the asset identifiers.
+3. For R scripts, set the working directory to the relevant workflow directory containing `example_data/`.
+4. Run the numbered scripts in ascending order.
+5. Consult each script header for input filenames, required fields, parameters and output descriptions.
 
-## Example Data and Reproducibility
+## Example Data
 
-The `example_data` directories contain compact input subsets, selected processed tables, expected outputs and reference figures that demonstrate the required data structures and principal processing steps.
+The `example_data` directories contain selected input subsets, processed tables and example outputs.
 
-The August raster subsets demonstrate raster extraction, spatial matching and daily aggregation; they are not the complete March–June datasets used in the manuscript. Selected 2000–2025 processed tables support downstream timing analyses and figure reproduction.
-
-Full MODIS, GloFAS and ERA5-Land archives are excluded because of their size. Reproducing the manuscript results requires the complete source datasets for the full analysis period.
+Some raster datasets include only a small subset of dates or years because the complete datasets are too large to include. These subsets illustrate input formats; full annual and multi-year calculations require the complete source data.
 
 ## Data Sources
 
-Source datasets comprise ArcticGRO DOC and outlet discharge observations; MODIS MCD43A4 Collection 6.1 NBAR reflectance; GloFAS historical discharge; ERA5-Land shallow soil water and snowmelt; WWF HydroSHEDS Free-Flowing Rivers Network v1; MERIT Hydro river-width information; and the Circum-Arctic Map of Permafrost and Ground-Ice Conditions, Version 2 (GGD318). Access links are provided in the manuscript's Data availability section.
+The analyses use field DOC observations, observed outlet discharge, MODIS MCD43A4 Collection 6.1 NBAR reflectance, GloFAS discharge, ERA5-Land soil water and snowmelt, river-network and basin boundaries, permafrost polygons, and Global Dam Watch reservoir and dam layers.
 
-Source datasets must be obtained from their original providers and used under the corresponding licences and redistribution conditions.
+Dataset details and access information are provided in the associated manuscript. Third-party datasets remain subject to their original licences and redistribution conditions.
 
-## Citation, Contact and Licence
+## Citation and Licence
 
-Please cite the associated manuscript and final archived code release when using this repository. Contact the corresponding author for enquiries. The repository-level `LICENSE` file governs the code; third-party datasets retain their original licences.
+Please cite the associated manuscript and archived code release when using this repository.
+
+The repository-level `LICENSE` file governs the code. Third-party datasets retain their original licences.
